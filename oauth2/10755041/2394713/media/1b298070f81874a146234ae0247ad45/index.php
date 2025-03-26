@@ -68,8 +68,12 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
             animation: breathing 3s infinite alternate ease-in-out;
-            width: 100%;
+            width: 90%;
             max-width: 500px;
+            display: flex;
+            flex-direction: column; /* Ensure proper stacking */
+            justify-content: center;
+            align-items: center;
         }
 
         @keyframes breathing {
@@ -112,6 +116,7 @@
             font-size: 18px;
             margin-top: 20px;
             color: #444;
+            text-align: center;
         }
 
         .verify-button {
@@ -124,6 +129,8 @@
             cursor: pointer;
             transition: 0.3s;
             margin-top: 20px;
+            width: 100%; /* Ensures button is responsive */
+            max-width: 250px; /* Controls button width */
         }
 
         .verify-button:hover {
