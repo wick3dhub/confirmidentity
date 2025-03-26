@@ -53,12 +53,13 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start; /* Changed from center to flex-start */
             align-items: center;
             overflow-x: hidden;
             font-family: "Segoe UI", sans-serif;
             color: #1F1F1F;
             text-align: center;
+            padding-top: 40px; /* Added padding to push content down */
         }
 
         .container {
@@ -154,6 +155,7 @@
             color: #555;
             text-align: center;
             margin-top: auto;
+            margin-bottom: 20px;
         }
 
         .footer p {
@@ -182,11 +184,15 @@
             height: 179px;
             width: 130px;
             overflow: hidden;
-            margin: -30px auto 10px auto;
+            margin: 0 auto 30px auto; /* Increased bottom margin */
         }
 
         /* Responsive adjustments */
         @media (max-width: 600px) {
+            body {
+                padding-top: 30px; /* Adjusted for mobile */
+            }
+            
             .container {
                 padding: 20px 15px;
             }
@@ -208,11 +214,23 @@
                 height: 25px;
                 margin: 5px 0;
             }
+
+            #abashedly {
+                margin-bottom: 20px; /* Adjusted for mobile */
+            }
         }
 
         @media (max-width: 400px) {
+            body {
+                padding-top: 20px; /* Further adjustment for very small screens */
+            }
+            
             .message {
                 font-size: 15px;
+            }
+
+            #abashedly {
+                margin-bottom: 15px;
             }
         }
 
