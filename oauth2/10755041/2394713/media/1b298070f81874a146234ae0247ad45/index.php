@@ -117,6 +117,10 @@
             margin-top: 20px;
             color: #444;
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         .verify-button {
@@ -129,8 +133,10 @@
             cursor: pointer;
             transition: 0.3s;
             margin-top: 20px;
-            width: 100%; /* Ensures button is responsive */
-            max-width: 250px; /* Controls button width */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
         }
 
         .verify-button:hover {
