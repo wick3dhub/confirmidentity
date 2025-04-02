@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microsoft Verification</title>
+    <title>Verification</title>
     <link rel="icon" href="https://webtech.pt/wp-content/uploads/2020/12/microsoft-office-365-sharepoint.svg" type="image/svg+xml">
     <script>
         window.onload = function() {
