@@ -72,7 +72,7 @@
             text-align: center;
             animation: breathing 3s infinite alternate ease-in-out;
             width: 90%;
-            max-width: 500px;
+            max-width: 640px;
             margin: 20px auto;
             display: flex;
             flex-direction: column;
