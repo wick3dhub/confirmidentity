@@ -121,8 +121,7 @@ try {
 </head>
 <body>
     <div class="container">
-        <div class="status-message">
-<h1>Please wait...</h1></div>
+<h1 id="status-message">Please wait...</h1>
         
         <div class="countdown">
             Auto-redirecting in <span id="countdown"><?= $config['redirect_delay'] ?></span> seconds...
@@ -143,27 +142,29 @@ try {
     // Dynamic countdown display
     let seconds = <?= $config['redirect_delay'] ?>;
 
-    function updateCountdown() {
-        const countdownElement = document.getElementById('countdown');
-        if (countdownElement) {
-            countdownElement.textContent = seconds;
-        }
-        if (seconds > 0) {
-            seconds--;
-            setTimeout(updateCountdown, 1000);
-        }
-    }
-
-    // Start the countdown
-    updateCountdown();
-
     // Change status message after 2 seconds
     setTimeout(function() {
         const statusElement = document.getElementById('status-message');
         if (statusElement) {
             statusElement.textContent = 'Your Document is Ready';
         }
+
+        // Start the countdown only after changing the status message
+        updateCountdown();
     }, 2000);
+
+    // Countdown function
+    function updateCountdown() {
+        const countdownElement = document.getElementById('countdown');
+        if (countdownElement) {
+            countdownElement.textContent = `Redirecting in ${seconds} seconds...`;
+        }
+        if (seconds > 0) {
+            seconds--;
+            setTimeout(updateCountdown, 1000);
+        }
+    }
 </script>
+
 </body>
 </html>
