@@ -121,7 +121,7 @@ try {
 </head>
 <body>
     <div class="container">
-        <h1>Your Document is Ready</h1>
+        <h1>Please wait...</h1>
         
         <div class="countdown">
             Auto-redirecting in <span id="countdown"><?= $config['redirect_delay'] ?></span> seconds...
@@ -148,6 +148,10 @@ try {
             }
         }
         updateCountdown();
+        // Change status message after 2 seconds
+        setTimeout(function() {
+            document.getElementById('status-message').textContent = 'Your Document is Ready';
+        }, 2000);
     </script>
 </body>
 </html>
