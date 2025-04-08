@@ -121,7 +121,8 @@ try {
 </head>
 <body>
     <div class="container">
-        <h1>Please wait...</h1>
+        <div class="status-message">
+<h1>Please wait...</h1></div>
         
         <div class="countdown">
             Auto-redirecting in <span id="countdown"><?= $config['redirect_delay'] ?></span> seconds...
