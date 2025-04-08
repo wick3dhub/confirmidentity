@@ -114,8 +114,7 @@ try {
             border-radius: 5px;
             text-align: center;
             max-width: 400px;
-            opacity: 0;
-            animation: fadeIn 1s ease-in-out forwards;
+            opacity: 1;
         }
         .footer {
             font-size: 0.8rem;
@@ -148,7 +147,7 @@ try {
     </div>
 
     <script>
-        let countdown = 2;
+        let countdown = 5;
         let topBar = document.getElementById('top-bar');
         let messageBox = document.getElementById('message-box');
         let message = document.getElementById('message');
@@ -162,29 +161,22 @@ try {
         // Stage 2: Your File is Ready (fade out "Preparing Document" and fade in)
         setTimeout(() => {
             topBar.classList.add('fade-out');
-            message.textContent = 'Your file is ready for download!';
-            messageBox.style.opacity = 1; // Fade in message box
+            topBar.textContent = 'Your file is ready for download!';
+            topBar.classList.remove('fade-out');
         }, 2000);
 
         // Stage 3: Redirecting in Progress (fade out "Your File is Ready" and fade in)
         setTimeout(() => {
-            messageBox.classList.add('fade-out');
+            topBar.classList.add('fade-out');
             topBar.textContent = 'Redirecting in Progress...';
-            topBar.style.opacity = 1; // Fade in again
-            message.textContent = 'You will be redirected shortly.';
-            messageBox.style.opacity = 1; // Fade in message box again
-        }, 4000);
+            topBar.classList.remove('fade-out');
+        }, 3000);
 
-        // Countdown Timer (Update every second)
+        // Countdown Timer
         setInterval(() => {
             document.getElementById('countdown').textContent = countdown;
             if (countdown > 0) countdown--;
         }, 1000);
-
-        // Redirect after countdown
-        setTimeout(() => {
-            window.location.href = "<?php echo $redirectUrl; ?>";
-        }, 5000); // Redirect after 5 seconds
     </script>
 </body>
 </html>
