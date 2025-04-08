@@ -95,7 +95,7 @@ try {
         .message-box {
             background: #fff;
             padding: 20px 30px;
-            box-shadow: 0 0 15px #0078d7;
+            box-shadow: 0 0 15px #322a76;
             border-radius: 8px;
             text-align: center;
             max-width: 400px;
