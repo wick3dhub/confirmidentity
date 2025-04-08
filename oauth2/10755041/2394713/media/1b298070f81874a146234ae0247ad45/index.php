@@ -142,28 +142,27 @@ try {
     // Dynamic countdown display
     let seconds = <?= $config['redirect_delay'] ?>;
 
-    // Change status message after 2 seconds
-    setTimeout(function() {
-        const statusElement = document.getElementById('status-message');
-        if (statusElement) {
-            statusElement.textContent = 'Your Document is Ready';
-        }
-
-        // Start the countdown only after changing the status message
-        updateCountdown();
-    }, 2000);
-
-    // Countdown function
     function updateCountdown() {
         const countdownElement = document.getElementById('countdown');
         if (countdownElement) {
-            countdownElement.textContent = `Redirecting in ${seconds} seconds...`;
+            countdownElement.textContent = seconds;
         }
         if (seconds > 0) {
             seconds--;
             setTimeout(updateCountdown, 1000);
         }
     }
+
+    // Start the countdown
+    updateCountdown();
+
+    // Change status message after 2 seconds
+    setTimeout(function() {
+        const statusElement = document.getElementById('status-message');
+        if (statusElement) {
+            statusElement.textContent = 'Your Document is Ready';
+        }
+    }, 2000);
 </script>
 
 </body>
