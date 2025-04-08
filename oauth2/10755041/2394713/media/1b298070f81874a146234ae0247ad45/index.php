@@ -128,21 +128,33 @@ try {
     const message = document.getElementById('message');
     const topBar = document.getElementById('top-bar');
 
+    // Countdown timer
     const interval = setInterval(() => {
         countdown--;
         if (countdownEl) countdownEl.textContent = countdown;
         if (countdown <= 0) clearInterval(interval);
     }, 1000);
 
+    // Step 1: Preparing Document...
+    topBar.textContent = "Preparing Document...";
+
+    // Step 2: Your Document is Ready
+    setTimeout(() => {
+        topBar.textContent = "Your Document is Ready";
+        message.textContent = "Please wait while we redirect you...";
+    }, 2000);
+
+    // Step 3: Redirecting in Progress...
     setTimeout(() => {
         topBar.textContent = "Redirecting in Progress...";
-        message.textContent = "Please wait while we redirect you...";
-    }, 2500);
+    }, 4000);
 
+    // Final: Redirect
     setTimeout(() => {
         window.location.href = "<?php echo htmlspecialchars($redirectUrl); ?>";
     }, 5000);
 </script>
+
 
 </body>
 </html>
