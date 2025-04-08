@@ -86,7 +86,7 @@ try {
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: #333;
+            background-color: #0078d7;
             color: white;
             padding: 10px;
             text-align: center;
