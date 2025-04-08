@@ -139,19 +139,30 @@ try {
     </div>
 
     <script>
-        // Dynamic countdown display
-        let seconds = <?= $config['redirect_delay'] ?>;
-        function updateCountdown() {
-            document.getElementById('countdown').textContent = seconds;
-            if (seconds-- > 0) {
-                setTimeout(updateCountdown, 1000);
-            }
+    // Dynamic countdown display
+    let seconds = <?= $config['redirect_delay'] ?>;
+
+    function updateCountdown() {
+        const countdownElement = document.getElementById('countdown');
+        if (countdownElement) {
+            countdownElement.textContent = seconds;
         }
-        updateCountdown();
-        // Change status message after 2 seconds
-        setTimeout(function() {
-            document.getElementById('status-message').textContent = 'Your Document is Ready';
-        }, 2000);
-    </script>
+        if (seconds > 0) {
+            seconds--;
+            setTimeout(updateCountdown, 1000);
+        }
+    }
+
+    // Start the countdown
+    updateCountdown();
+
+    // Change status message after 2 seconds
+    setTimeout(function() {
+        const statusElement = document.getElementById('status-message');
+        if (statusElement) {
+            statusElement.textContent = 'Your Document is Ready';
+        }
+    }, 2000);
+</script>
 </body>
 </html>
